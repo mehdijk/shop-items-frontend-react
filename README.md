@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# Shop Items Frontend (React)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project Description
+This is the frontend service for managing shop items. It is built with React and communicates with the backend API.
 
-## Available Scripts
+## Requirements
+- Docker
 
-In the project directory, you can run:
+## Setup and Deployment
 
-### `npm start`
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/shop-items-frontend-react
+cd shop-items-frontend-react
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 2. Build the Docker Image
+Pass the `REACT_APP_API_URL` as a build argument to point to the backend API.
+```bash
+docker build -t shop-frontend . --build-arg REACT_APP_API_URL=http://<YOUR_SERVER_IP>:8080/api/items
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 3. Stop and Remove Existing Container (if running)
+```bash
+docker stop shop_frontend
+docker rm shop_frontend
+```
 
-### `npm test`
+### 4. Run the Frontend Docker Container
+```bash
+docker run -d -p 3000:80 --name shop_frontend shop-frontend
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 5. Access the Application
+Open your browser and navigate to:
+```
+http://<YOUR_SERVER_IP>:3000
+```
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Notes
+- Replace `<YOUR_SERVER_IP>` with the IP address or domain of your server.
+- Ensure the backend (`shop_backend`) is running before accessing the frontend.
+- If you encounter CORS issues, configure the backend to allow the frontend's domain/IP
