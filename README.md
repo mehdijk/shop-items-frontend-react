@@ -17,7 +17,7 @@ cd shop-items-frontend-react
 ### 2. Build the Docker Image
 Pass the `REACT_APP_API_URL` as a build argument to point to the backend API.
 ```bash
-docker build -t shop-frontend . --build-arg REACT_APP_API_URL=http://<YOUR_SERVER_IP>:8080/api/items
+docker build -t shop-frontend . --build-arg REACT_APP_API_URL=http://<YOUR_SERVER_IP>:8080/api
 ```
 
 ### 3. Stop and Remove Existing Container (if running)
