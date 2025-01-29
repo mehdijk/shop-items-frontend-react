@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { createItem, updateItem } from "../services/api";
-import { TextField, Button, Box, Container, Typography } from "@mui/material";
-import { useNavigate , useLocation } from "react-router-dom";
-import { getItems } from '../services/api';
-
+import { createItem, updateItem, getItems, generateDescription } from "../services/api";
+import { TextField, Button, Box, Container, Typography, CircularProgress, Tooltip } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const ItemForm = () => {
   const [item, setItem] = useState({ name: "", description: "", price: 0, quantity: 0 });
+  const [loadingDescription, setLoadingDescription] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate ();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const id = queryParams.get("id");
     if (id) {
-      // Fetch the item for update (you should add API to get by id)
+      // Fetch the item for update
       const fetchItem = async () => {
-        const response = await getItems(); // Modify to get a single item by ID
-        setItem(response.data.find((i) => i.id === parseInt(id)));
+        try {
+          const response = await getItems();
+          const foundItem = response.data.find((i) => i.id === parseInt(id));
+          if (foundItem) {
+            setItem(foundItem);
+          }
+        } catch (error) {
+          console.error("Error fetching item:", error);
+        }
       };
       fetchItem();
     }
@@ -25,17 +31,43 @@ const ItemForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setItem({ ...item, [name]: value });
+    setItem((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (item.id) {
-      await updateItem(item.id, item);
-    } else {
-      await createItem(item);
+    try {
+      if (item.id) {
+        await updateItem(item.id, item); // Update the item in the backend
+      } else {
+        await createItem(item); // Create a new item
+      }
+      navigate("/"); // Navigate back to the home page
+    } catch (error) {
+      console.error("Error saving item:", error);
+      alert("Failed to save the item. Please try again.");
     }
-    navigate("/");
+  };
+
+  const generateDescriptionHandler = async () => {
+    if (!item.name.trim()) {
+      alert("Please enter the item's name before generating a description.");
+      return;
+    }
+
+    try {
+      setLoadingDescription(true);
+      const response = await generateDescription(item.name);
+      setItem((prevState) => ({
+        ...prevState,
+        description: response.data,
+      }));
+    } catch (error) {
+      console.error("Error generating description:", error);
+      alert("Failed to generate description. Please try again.");
+    } finally {
+      setLoadingDescription(false);
+    }
   };
 
   return (
@@ -53,17 +85,29 @@ const ItemForm = () => {
           margin="normal"
           required
         />
-        <TextField
-          label="Description"
-          name="description"
-          value={item.description}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          multiline
-          rows={4}
-          required
-        />
+        <Box display="flex" alignItems="center" gap={2} marginBottom={2}>
+          <TextField
+            label="Description"
+            name="description"
+            value={item.description}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            multiline
+            rows={4}
+            required
+          />
+          <Tooltip title="Automatically generate a description based on the item name">
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={generateDescriptionHandler}
+              disabled={loadingDescription}
+            >
+              {loadingDescription ? <CircularProgress size={24} /> : "Generate"}
+            </Button>
+          </Tooltip>
+        </Box>
         <TextField
           label="Price"
           name="price"
